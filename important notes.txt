@@ -1,0 +1,10 @@
+important file for soil file registry**
+
+.soil
+The extension file of app.bat
+
+soilApp
+the subkey of .soil file file shell command and Default Icon
+
+ie4uinit.exe -ClearIconCache
+for clear icon cahche then refresh all icons in pc
