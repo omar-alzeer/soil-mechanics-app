@@ -1,6 +1,7 @@
 from tkinter import *
+from tkinter import messagebox
+from tkinter.filedialog import asksaveasfile
 import matplotlib.pyplot as plt
-import os
 import struct
 
 #examples
@@ -53,11 +54,10 @@ def putting():
 	for i in range(9):
 		put_mahjouz[i].set(f"{values_of_percent_of_almahjozah[i]}")
 
-def save():
+def save_file():
 	save_val.clear()
 
-	if os.path.exists(save.get()):
-		os.remove(save.get())
+	file = asksaveasfile(initialfile = 'Untitled.soil',defaultextension=".soil",filetypes=[("Soil Documents","*.soil"),("All Files","*.*")])
 	
 	for i in range(1,len(box1)):
 		if isfloat(box1[i].get()):
@@ -71,14 +71,14 @@ def save():
 		else:
 			save_val.append(None)
 			
-	with open(save.get(),"wb") as f:
+	with open(file.name,"wb") as f:
 		for i in save_val:
 			if i == None:
 				f.write(b"\x00\x00\x00\x00")
 			else:
 				f.write(float_to_hex(float(i)))
 
-# to get values from (.omar) file format
+# to get values from (.soil) file format
 def get_from_file():
 	with open(sys.argv[1],"rb") as f:
 		for i in range(0,len(f.read()),4):
@@ -117,14 +117,16 @@ def commando():
 		try:
 			fathat_al_minkhul();wazen_jaf_mahjoz();percent_of_almahjozah();trakom();marra();putting();plotting();
 		except:
-			print("ERROR in values of textboxes")
+			messagebox.showerror('خطأ حسابي', 'هناك خطأ في أحد القيم أو أن هناك خانات فارغة')
+
 
 root = Tk()
 
 
 table_frame = Frame(root)
+btns_frame = Frame(root)
 
-f1= Frame(table_frame)
+f1 = Frame(table_frame)
 f2= Frame(table_frame)
 f3= Frame(table_frame)
 f4= Frame(table_frame)
@@ -156,8 +158,6 @@ marra_val = []
 
 save_val = []
 
-e_save = StringVar()
-
 
 for i in range(9):
 	box1.append(Entry(f1,textvariable = put_fatha[i]))
@@ -171,16 +171,17 @@ for i in columns:
 		j.pack()
 
 if len(sys.argv) > 1:
-	e_save.set(sys.argv[1].split("\\")[-1])
 	get_from_file()
 	put_fatha_wazen()
 
 
-Button(root,text="click",command=commando).pack()
-Button(root,text="save",command=save).pack()
-save = Entry(root,textvariable = e_save)
+click_btn = Button(btns_frame,text="احسب",command=commando,takefocus=0)
+save_btn = Button(btns_frame,text="حفظ",command=save_file,takefocus=0)
 
-save.pack()
+btns_frame.pack(pady=20)
+
+click_btn.pack(side=LEFT,padx=25)
+save_btn.pack(side=LEFT,padx=25)
 
 table_frame.pack(side=LEFT,expand=YES)
 
@@ -190,6 +191,11 @@ f3.pack(side=LEFT)
 f4.pack(side=LEFT)
 f5.pack(side=LEFT)
 
+root.bind('<Up>' , up)
+root.bind('<Down>' , down)
+root.bind('<Right>' , right)
+root.bind('<Left>' , left)
+root.bind('<Return>', enter)
 
 root.mainloop()
 
