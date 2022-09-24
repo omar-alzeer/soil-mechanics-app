@@ -1,5 +1,7 @@
-from tkinter import *
-from tkinter import messagebox
+from tkinter import (Tk,Frame,
+					Entry,Label,
+					messagebox,Button,
+					StringVar,LEFT,YES)
 from tkinter.filedialog import asksaveasfile , askopenfile
 import matplotlib.pyplot as plt
 import struct
