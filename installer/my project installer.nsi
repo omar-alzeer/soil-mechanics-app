@@ -1,8 +1,8 @@
 ; The name of the installer
-Name "soil"
+Name "soilmech"
 
 ; The file to write
-OutFile "soil.exe"
+OutFile "soilmech.exe"
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel user
@@ -11,7 +11,7 @@ RequestExecutionLevel user
 Unicode True
 
 ; The default installation directory
-InstallDir $DESKTOP\soil
+InstallDir $DESKTOP\soilmech
 
 ;--------------------------------
 
@@ -40,7 +40,7 @@ Section "" ;No components page, name is not important
   SetOutPath $INSTDIR
   
   ; Put file there
-  File /nonfatal /a /r "soil\"
+  File /nonfatal /a /r "..\soilmech\"
   
 SectionEnd
 
@@ -49,7 +49,7 @@ Section
 WriteRegStr HKCU "Software\Classes\.soil" "" "soilApp"
 WriteRegStr HKCU "Software\Classes\soilApp" "" "My soil App"
 WriteRegStr HKCU "Software\Classes\soilApp\DefaultIcon" "" "$INSTDIR\Icons\soil.ico"
-WriteRegStr HKCU "Software\Classes\soilApp\shell\open\command" "" '"$INSTDIR\app.bat" "%1"'
+WriteRegStr HKCU "Software\Classes\soilApp\shell\open\command" "" '"$INSTDIR\soilmech.exe" "%1"'
 
 Call RefreshShellIcons
 
