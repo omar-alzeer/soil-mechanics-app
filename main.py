@@ -5,11 +5,19 @@ from tkinter import (Tk,Frame,
 from tkinter.filedialog import asksaveasfile , askopenfile
 import matplotlib.pyplot as plt
 import struct
+import sys
 
 #examples
 # [25.4,19.1,9.5,4.75,2.0,0.84,0.425,0.074,0.005]
 # [223,142,283,270,200,165,125,140,130]
 # [88.8,81.7,67.5,54.0,44.0,35.7,29.4,22.4,15.9]
+
+values_of_fathat_al_minlkhul = []
+values_of_wazen_jaf_mahjoz = []
+values_of_percent_of_almahjozah = []
+trakom_val = []
+marra_val = []
+save_val = []
 
 def clear_values():
 	values_of_fathat_al_minlkhul.clear()
@@ -30,9 +38,6 @@ def isfloat(element):
         return True
     except ValueError:
         return False
-
-def enter(event):
-	root.focus_get().tk_focusNext().focus_set()
 
 def up(event):
 	root.focus_get().tk_focusPrev().focus_set()
@@ -94,7 +99,7 @@ def save_file():
 		else:
 			save_val.append(None)
 
-	if file is not None:		
+	if file is not None:
 		with open(file.name,"wb") as f:
 			for i in save_val:
 				if i == None:
@@ -103,29 +108,37 @@ def save_file():
 					f.write(float_to_hex(float(i)))
 
 def open_file():
+	s = -1
+
 	file = askopenfile(mode ='rb', filetypes =[('Soil Files', '*.soil')])
 	clear_values()
 
 	if file is not None:
 		with open(file.name,"rb") as f:
-			for i in range(0,len(f.read()),4):
+			for j , i in enumerate(range(0,len(f.read()),4)):
 				f.seek(0)
 				if i < 36:
-					values_of_fathat_al_minlkhul.append(hex_to_float(bytes.hex(f.read()[i:i+4])))
+					put_fatha[j].set(str(hex_to_float(bytes.hex(f.read()[i:i+4]))))
 				else:
-					values_of_wazen_jaf_mahjoz.append(hex_to_float(bytes.hex(f.read()[i:i+4])))
-		put_fatha_wazen()
+					s = s + 1
+					put_wazen[s].set(str(hex_to_float(bytes.hex(f.read()[i:i+4]))))
+
 		clear_entry_boxes()
+		f.close()
 
 # to get values from (.soil) file format
 def get_from_file():
-	with open(sys.argv[1],"rb") as f:
-		for i in range(0,len(f.read()),4):
+	s = -1
+	with open(sys.argv[-1],"rb") as f:
+		for j , i in enumerate(range(0,len(f.read()),4)):
 			f.seek(0)
 			if i < 36:
-				values_of_fathat_al_minlkhul.append(hex_to_float(bytes.hex(f.read()[i:i+4])))
+				put_fatha[j].set(str(hex_to_float(bytes.hex(f.read()[i:i+4]))))
 			else:
-				values_of_wazen_jaf_mahjoz.append(hex_to_float(bytes.hex(f.read()[i:i+4])))
+				s = s + 1
+				put_wazen[s].set(str(hex_to_float(bytes.hex(f.read()[i:i+4]))))
+
+	f.close()
 
 
 def plotting():
@@ -150,18 +163,12 @@ def clear_entry_boxes():
 
 
 def commando():
-	if len(sys.argv) > 1:
+	try:
+		fathat_al_minkhul();wazen_jaf_mahjoz();percent_of_almahjozah()
+		trakom();marra();putting();plotting()
 		clear_values()
-		get_from_file()
-		percent_of_almahjozah();trakom();marra();putting();plotting()
-
-	else:
-		clear_values()
-		try:
-			fathat_al_minkhul();wazen_jaf_mahjoz();percent_of_almahjozah()
-			trakom();marra();putting();plotting()
-		except:
-			messagebox.showerror('خطأ حسابي', 'هناك خطأ في أحد القيم أو أن هناك خانات فارغة')
+	except:
+		messagebox.showerror('خطأ حسابي', 'هناك خطأ في أحد القيم أو أن هناك خانات فارغة')
 
 
 root = Tk()
@@ -194,14 +201,6 @@ put_marra = [StringVar() for i in range(9)]
 put_trakom = [StringVar() for i in range(9)]
 put_mahjouz = [StringVar() for i in range(9)]
 
-values_of_fathat_al_minlkhul = []
-values_of_wazen_jaf_mahjoz = []
-values_of_percent_of_almahjozah = []
-trakom_val = []
-marra_val = []
-
-save_val = []
-
 
 for i in range(9):
 	box1.append(Entry(f1,textvariable = put_fatha[i]))
@@ -216,12 +215,11 @@ for i in columns:
 
 if len(sys.argv) > 1:
 	get_from_file()
-	put_fatha_wazen()
 
 
-click_btn = Button(btns_frame,text="حساب و رسم",command=commando,takefocus=0)
 save_btn = Button(btns_frame,text="حفظ كملف",command=save_file,takefocus=0)
 open_btn = Button(btns_frame,text="فتح ملف",command=open_file,takefocus=0)
+click_btn = Button(btns_frame,text="حساب و رسم",command=commando,takefocus=0)
 
 btns_frame.pack(pady=20)
 
@@ -243,7 +241,8 @@ root.bind('<Up>' , up)
 root.bind('<Down>' , down)
 root.bind('<Right>' , right)
 root.bind('<Left>' , left)
-root.bind('<Return>', enter)
+root.bind('<Return>', down)
+
 
 root.mainloop()
 
